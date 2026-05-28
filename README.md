@@ -1,2 +1,13 @@
-# enterprise-ai-copilot
-Enterprise AI Copilot is a full-stack AI-powered enterprise productivity platform built using Spring Boot, React, PostgreSQL, LangChain, and Gemini AI. The platform enables secure authentication, intelligent document-based question answering (RAG), meeting summarization, workflow automation, and enterprise knowledge management.
+# Enterprise AI Copilot
+
+An AI-powered enterprise productivity platform that enables intelligent document search, AI chat assistance, meeting summarization, and workflow automation using Retrieval-Augmented Generation (RAG).
+
+## Tech Stack
+
+* Spring Boot
+* React
+* PostgreSQL
+* LangChain
+* Gemini API
+* ChromaDB
+* JWT Authentication
