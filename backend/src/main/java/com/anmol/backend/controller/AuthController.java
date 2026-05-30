@@ -1,5 +1,6 @@
 package com.anmol.backend.controller;
 
+import com.anmol.backend.dto.LoginRequest;
 import com.anmol.backend.dto.RegisterRequest;
 import com.anmol.backend.entity.User;
 import com.anmol.backend.service.UserService;
@@ -19,5 +20,10 @@ public class AuthController {
     @PostMapping("/register")
     public User register(@RequestBody RegisterRequest request) {
         return userService.registerUser(request);
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequest request) {
+        return userService.login(request);
     }
 }
