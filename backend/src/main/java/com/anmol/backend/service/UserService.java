@@ -4,6 +4,7 @@ import com.anmol.backend.dto.LoginRequest;
 import com.anmol.backend.dto.RegisterRequest;
 import com.anmol.backend.entity.User;
 import com.anmol.backend.repository.UserRepository;
+import com.anmol.backend.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,9 @@ public class UserService {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     public User registerUser(RegisterRequest request) {
 
@@ -53,6 +57,7 @@ public class UserService {
             throw new RuntimeException("Invalid password");
         }
 
-        return "Login Successful";
+//        return "Login Successful";
+        return jwtUtil.generateToken(user.getEmail());
     }
 }
