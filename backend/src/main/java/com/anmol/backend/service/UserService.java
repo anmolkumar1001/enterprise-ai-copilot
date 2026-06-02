@@ -27,7 +27,7 @@ public class UserService {
 
         user.setName(request.getName());
         user.setEmail(request.getEmail());
-//        user.setPassword(request.getPassword());
+        user.setRole("USER");
 
         user.setPassword(
                 bCryptPasswordEncoder.encode(request.getPassword())

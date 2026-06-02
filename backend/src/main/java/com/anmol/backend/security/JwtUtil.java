@@ -12,38 +12,46 @@ import java.util.Date;
 public class JwtUtil {
 
     @Value("${jwt.secret}")
-    private String SECRET;
+    private String secret;
 
-    // Convert secret string into SecretKey object required by JWT library
-    private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
     public String generateToken(String email) {
 
         return Jwts.builder()
-
-                // Store user email inside token
                 .subject(email)
                 .issuedAt(new Date())
-                .expiration(
-                        new Date(System.currentTimeMillis() + 86400000))
-                .signWith(key)
-                .compact(); // Convert into jwt string
+                .expiration(new Date(System.currentTimeMillis() + 86400000))
+                .signWith(getSigningKey())
+                .compact();
     }
 
     public String extractEmail(String token) {
 
         return Jwts.parser()
-
-                .verifyWith(key)
+                .verifyWith(getSigningKey())
                 .build()
-
-                // parse JWT token
                 .parseSignedClaims(token)
-
-                // Get payload section
                 .getPayload()
-
-                // Return email stored in subject
                 .getSubject();
+    }
+
+    public boolean validateToken(String token) {
+
+        try {
+
+            Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token);
+
+            return true;
+
+        } catch (Exception e) {
+
+            return false;
+        }
     }
 }

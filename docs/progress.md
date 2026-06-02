@@ -33,3 +33,13 @@
 * Verified encrypted passwords stored in PostgreSQL
 * Updated project documentation
 * Pushed authentication module to GitHub
+
+## Day 4
+- Implemented JWT token generation
+- Implemented JWT token validation
+- Protected Profile API using JWT
+- Moved database credentials to environment variables
+- Moved JWT secret to environment variables
+- Resolved Git merge conflicts
+- Learned Git rebase workflow
+- Successfully pushed secure code to GitHub
