@@ -1,10 +1,13 @@
 package com.anmol.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -26,4 +29,8 @@ public class User {
     private String password;
 
     private String role = "USER";
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Chat> chats;
 }
