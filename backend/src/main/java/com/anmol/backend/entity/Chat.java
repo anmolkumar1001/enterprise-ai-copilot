@@ -1,5 +1,6 @@
 package com.anmol.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,7 +31,11 @@ public class Chat {
 
     private LocalDateTime createdAt;
 
+    // Many chats can belong to one user
     @ManyToOne
+
+    // Foreign key column in chats table that references users.id
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 }

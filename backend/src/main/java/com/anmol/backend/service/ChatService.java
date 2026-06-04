@@ -20,6 +20,9 @@ public class ChatService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AIService aiService;
+
     public Chat createChat(String email, ChatRequest request) {
 
         User user = userRepository.findByEmail(email)
@@ -30,8 +33,15 @@ public class ChatService {
         chat.setTitle(request.getTitle());
         chat.setUserMessage(request.getMessage());
 
-        // Placeholder response for now
-        chat.setAiResponse("AI integration will be added in Day 7");
+//        // Placeholder response for now
+//        chat.setAiResponse("AI integration will be added in Day 7");
+
+        String aiResponse =
+                aiService.getResponse(
+                        request.getMessage()
+                );
+
+        chat.setAiResponse(aiResponse);
 
         chat.setCreatedAt(LocalDateTime.now());
 
