@@ -198,3 +198,53 @@ Current Features:
 * AI Integration
 
 
+# Day 8 Progress
+
+## Completed Features
+
+### Chat Sessions
+
+* Created ChatSession entity
+* Added ChatSessionRepository
+* Added ChatSessionService
+* Added ChatSessionController
+* Users can create multiple chat sessions
+
+### Session Based Conversations
+
+* Linked Chat entity with ChatSession
+* Added session_id foreign key
+* Messages are now grouped by conversation
+
+### APIs Implemented
+
+#### Session APIs
+
+* POST /api/sessions
+* GET /api/sessions
+
+#### Message APIs
+
+* POST /api/chat/sessions/{sessionId}/messages
+* GET /api/chat/sessions/{sessionId}/messages
+* DELETE /api/chat/{id}
+
+### AI Integration
+
+* Groq AI responses stored with messages
+* Session history preserved
+
+### Database Design
+
+* User → ChatSession (One To Many)
+* ChatSession → Chat (One To Many)
+
+### Optional Features
+
+* Like Message API
+* Dislike Message API
+
+## Status
+
+Day 8 Completed Successfully
+Backend now supports ChatGPT-style conversations with session management.

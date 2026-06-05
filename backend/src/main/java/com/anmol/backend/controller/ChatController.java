@@ -16,12 +16,18 @@ public class ChatController {
     @Autowired
     private ChatService chatService;
 
-    @PostMapping
-    public Chat createChat(@RequestBody ChatRequest request, Authentication authentication) {
+    @PostMapping("/sessions/{sessionId}/messages")
+    public Chat createChat(@PathVariable Long sessionId, @RequestBody ChatRequest request, Authentication authentication) {
 
         String email = authentication.getName();
 
-        return chatService.createChat(email, request);
+        return chatService.createChat(sessionId, email, request);
+    }
+
+    @GetMapping("/sessions/{sessionId}/messages")
+    public List<Chat> getMessagesBySession(@PathVariable Long sessionId) {
+
+        return chatService.getMessagesBySession(sessionId);
     }
 
     @GetMapping
@@ -38,5 +44,15 @@ public class ChatController {
         chatService.deleteChat(id);
 
         return "Chat deleted successfully";
+    }
+
+    @PutMapping("/{id}/like")
+    public Chat likeMessage(@PathVariable Long id) {
+        return chatService.likeMessage(id);
+    }
+
+    @PutMapping("/{id}/dislike")
+    public Chat dislikeMessage(@PathVariable Long id) {
+        return chatService.dislikeMessage(id);
     }
 }

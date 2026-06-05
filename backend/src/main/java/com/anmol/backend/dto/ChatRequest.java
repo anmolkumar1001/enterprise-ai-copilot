@@ -8,4 +8,6 @@ public class ChatRequest {
     private String title;
 
     private String message;
+
+    private Long sessionId;
 }

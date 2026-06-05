@@ -8,14 +8,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@Table(name = "chats")
+@Table(name = "chat_sessions")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Chat {
+public class ChatSession {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,27 +24,14 @@ public class Chat {
 
     private String title;
 
-    @Column(columnDefinition = "TEXT")
-    private String userMessage;
-
-    @Column(columnDefinition = "TEXT")
-    private String aiResponse;
-
     private LocalDateTime createdAt;
 
-    // Many chats can belong to one user
     @ManyToOne
-
-    // Foreign key column in chats table that references users.id
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "session_id")
-    private ChatSession session;
-
-    private Boolean liked;
-
-    private Boolean disliked;
+    @OneToMany(mappedBy = "session")
+    @JsonIgnore
+    private List<Chat> chats;
 }
