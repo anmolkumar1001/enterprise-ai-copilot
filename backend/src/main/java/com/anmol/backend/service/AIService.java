@@ -13,32 +13,34 @@ public class AIService {
     @Value("${groq.api.key}")
     private String apiKey;
 
-    // Used to make HTTP requests to Groq API
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public String getResponse(String prompt) {
+    public String getResponse(List<Map<String, String>> messages) {
 
-        // Groq Chat Completion API endpoint
         String url = "https://api.groq.com/openai/v1/chat/completions";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(apiKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        Map<String, Object> message = Map.of(
-                "role", "user",
-                "content", prompt
+        Map<String, Object> body = new HashMap<>();
+
+        body.put(
+                "model",
+                "llama-3.3-70b-versatile"
         );
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("model", "llama-3.3-70b-versatile");
-        body.put("messages", List.of(message));
+        body.put(
+                "messages",
+                messages
+        );
 
-        // Combine headers + body into one request object
         HttpEntity<Map<String, Object>> request =
-                new HttpEntity<>(body, headers);
+                new HttpEntity<>(
+                        body,
+                        headers
+                );
 
-        // Send POST request to Groq API
         ResponseEntity<Map> response =
                 restTemplate.postForEntity(
                         url,
@@ -47,19 +49,22 @@ public class AIService {
                 );
 
         try {
-            // Extract choices array
-            List choices = (List) response.getBody().get("choices");
 
-            // Get first choice
-            Map choice = (Map) choices.get(0);
+            List choices =
+                    (List) response.getBody()
+                            .get("choices");
 
-            // Get message object
-            Map msg = (Map) choice.get("message");
+            Map choice =
+                    (Map) choices.get(0);
 
-            // Return AI response text
-            return msg.get("content").toString();
+            Map message =
+                    (Map) choice.get("message");
+
+            return message.get("content")
+                    .toString();
 
         } catch (Exception e) {
+
             return "Failed to generate AI response";
         }
     }

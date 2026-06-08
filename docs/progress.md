@@ -244,7 +244,35 @@ Current Features:
 * Like Message API
 * Dislike Message API
 
-## Status
+# Day 9 Progress
 
-Day 8 Completed Successfully
-Backend now supports ChatGPT-style conversations with session management.
+## Completed Features
+
+### Conversation Memory
+
+* Added session-based conversation history
+* Previous messages are loaded from database
+* AI receives complete chat context
+* Messages are sent to Groq with history
+
+### Database Integration
+
+* Added repository method:
+
+  * findBySessionOrderByCreatedAtAsc()
+* Fetches messages in chronological order
+
+### AI Improvements
+
+* AI remembers previous messages in the same session
+* Context-aware responses implemented
+* Different sessions maintain separate memory
+
+### Testing Completed
+
+* Verified memory retention
+* Verified session isolation
+* Verified message history retrieval
+* Verified Groq context passing
+
+

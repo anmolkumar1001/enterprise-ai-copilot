@@ -11,4 +11,6 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
 
     List<Chat> findByUser(User user);
     List<Chat> findBySession(ChatSession session);
+
+    List<Chat> findBySessionOrderByCreatedAtAsc(ChatSession session);
 }

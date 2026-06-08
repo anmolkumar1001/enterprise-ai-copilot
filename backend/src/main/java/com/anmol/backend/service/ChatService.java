@@ -36,15 +36,40 @@ public class ChatService {
         ChatSession session = chatSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
+        // Load previous chats in this session
+        List<Chat> previousChats = chatRepository.findBySessionOrderByCreatedAtAsc(session);
+
+        // Build conversation history
+        List<java.util.Map<String, String>> messages = new java.util.ArrayList<>();
+
+        for(Chat oldChat : previousChats) {
+
+            messages.add(java.util.Map.of(
+                    "role", "user",
+                    "content", oldChat.getUserMessage()
+            ));
+
+            messages.add(java.util.Map.of(
+                    "role", "assistant",
+                    "content", oldChat.getAiResponse()
+            ));
+        }
+
+        // Add current user message
+        messages.add(
+                java.util.Map.of(
+                        "role", "user",
+                        "content", request.getMessage()
+                )
+        );
+
+        // call Groq with full history
+        String aiResponse = aiService.getResponse(messages);
+
         Chat chat = new Chat();
 
         chat.setTitle(request.getTitle());
         chat.setUserMessage(request.getMessage());
-
-        String aiResponse =
-                aiService.getResponse(
-                        request.getMessage()
-                );
 
         chat.setAiResponse(aiResponse);
 
