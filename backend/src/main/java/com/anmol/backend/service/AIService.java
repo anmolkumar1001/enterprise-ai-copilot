@@ -23,6 +23,40 @@ public class AIService {
         headers.setBearerAuth(apiKey);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        // Add system prompt
+        List<Map<String, String>> finalMessages = new ArrayList<>();
+
+        finalMessages.add(
+                Map.of(
+                        "role", "system",
+                        "content",
+                        """
+                        You are a helpful AI assistant.
+
+                        Rules:
+                        - Give concise answers.
+                        - Use bullet points whenever possible.
+                        - For technical topics use this format:
+
+                        Definition:
+                        Short definition
+
+                        Features:
+                        - Point 1
+                        - Point 2
+                        - Point 3
+
+                        Example:
+                        Give an example if needed.
+
+                        Keep answers under 150 words unless the user asks for detailed explanations.
+                        """
+                )
+        );
+
+        // Add conversation history
+        finalMessages.addAll(messages);
+
         Map<String, Object> body = new HashMap<>();
 
         body.put(
@@ -32,7 +66,7 @@ public class AIService {
 
         body.put(
                 "messages",
-                messages
+                finalMessages
         );
 
         HttpEntity<Map<String, Object>> request =
