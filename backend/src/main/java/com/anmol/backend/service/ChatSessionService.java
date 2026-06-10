@@ -48,6 +48,17 @@ public class ChatSessionService {
                 .orElseThrow(() -> new RuntimeException("Session not found"));
     }
 
+    public ChatSession renameSession(Long sessionId, String title) {
+
+        ChatSession session = chatSessionRepository
+                .findById(sessionId)
+                .orElseThrow();
+
+        session.setTitle(title);
+
+        return chatSessionRepository.save(session);
+    }
+
     public void deleteSession(Long sessionId) {
 
         if(!chatSessionRepository.existsById(sessionId)) {

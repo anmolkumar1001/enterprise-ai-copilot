@@ -79,6 +79,21 @@ public class ChatService {
 
         chat.setSession(session);
 
+        // Auto-generate session title from first message
+        if(session.getTitle().equals("New Chat")) {
+
+            String title = request.getMessage();
+
+            // Limit title length
+            if(title.length() > 30) {
+                title = title.substring(0, 30) + "...";
+            }
+
+            session.setTitle(title);
+
+            chatSessionRepository.save(session);
+        }
+
         return chatRepository.save(chat);
     }
 
@@ -95,7 +110,7 @@ public class ChatService {
         ChatSession session = chatSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Session not found"));
 
-        return chatRepository.findBySession(session);
+        return chatRepository.findBySessionOrderByCreatedAtAsc(session);
     }
 
     public Chat likeMessage(Long id) {

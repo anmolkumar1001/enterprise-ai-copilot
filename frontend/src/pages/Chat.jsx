@@ -5,7 +5,9 @@ import ChatWindow from "../components/ChatWindow";
 
 function Chat() {
 
-    const[selectedSessionId, setSelectedSessionId] = useState(5);
+    const[selectedSessionId, setSelectedSessionId] = useState(null);
+
+    const[refreshSessions, setRefreshSessions] = useState(false);
 
     return (
 
@@ -14,9 +16,13 @@ function Chat() {
             <SideBar
                 selectedSessionId={selectedSessionId}
                 setSelectedSessionId={setSelectedSessionId}
+                refreshSessions={refreshSessions}
             />
 
-            <ChatWindow sessionId={selectedSessionId} />
+            <ChatWindow 
+                sessionId={selectedSessionId} 
+                setRefreshSessions={setRefreshSessions} 
+            />
 
         </div>
     );

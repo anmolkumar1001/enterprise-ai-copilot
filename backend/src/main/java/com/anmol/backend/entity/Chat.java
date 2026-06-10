@@ -43,7 +43,9 @@ public class Chat {
     @JoinColumn(name = "session_id")
     private ChatSession session;
 
+    @Column
     private Boolean liked;
 
+    @Column
     private Boolean disliked;
 }

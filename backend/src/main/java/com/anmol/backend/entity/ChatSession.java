@@ -31,7 +31,19 @@ public class ChatSession {
     @JsonIgnore
     private User user;
 
-    @OneToMany(mappedBy = "session")
+    @OneToMany(
+            mappedBy = "session",
+
+            // When a session is deleted,
+            // all chats belonging to that session
+            // will also be deleted automatically
+            cascade = CascadeType.ALL,
+
+            // If a chat is removed from the session
+            // and no longer belongs to any session,
+            // Hibernate will delete it from the database
+            orphanRemoval = true
+    )
     @JsonIgnore
     private List<Chat> chats;
 }

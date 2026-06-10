@@ -5,6 +5,7 @@ const api = axios.create({
 });
 
 // Add a request interceptor - runs before every request is sent
+//  Interceptor runs → attaches JWT token to header
 api.interceptors.request.use((config) => {
 
     const token = localStorage.getItem('token');
