@@ -3,6 +3,7 @@ import MessageInput from "./MessageInput";
 import api from "../api/axiosConfig";
 import ReactMarkdown from "react-markdown";
 import { FaCopy } from "react-icons/fa";
+import "../styles/chat.css";
 
 function ChatWindow({ sessionId, setRefreshSessions }) {
 
@@ -83,7 +84,7 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
 
         navigator.clipboard.writeText(text);
 
-        alert("AI response copied to clipboard!");
+        alert("Copied to clipboard!");
     };
 
     const likeMessage = async(id) => {
@@ -92,7 +93,17 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
 
             await api.put(`/chat/${id}/like`);
 
-            loadMessages();
+            setMessages(prev => 
+                prev.map(msg => 
+                    msg.id === id
+                        ? {
+                            ...msg,
+                            liked: true,
+                            disliked: false
+                        }
+                        : msg
+                )
+            );
         }
         catch(error) {
 
@@ -106,7 +117,17 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
 
             await api.put(`/chat/${id}/dislike`);
 
-            loadMessages();
+            setMessages(prev => 
+                prev.map(msg => 
+                    msg.id === id
+                        ? {
+                            ...msg,
+                            liked: false,
+                            disliked: true
+                        }
+                        : msg
+                )
+            );
         }
         catch(error) {
 
@@ -116,80 +137,190 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
 
     return (
 
-        <div style={{ flex: 1, padding: "20px", overflowY: "auto" }}>
+        <div style={{ 
+                flex: 1, 
+                display: "flex",
+                flexDirection: "column",
+                background: "#0f172a",
+                height: "100vh"
+            }}
+        >
 
-            <h2>Chat Area</h2>
+            <div
+                style={{
+                    flex: 1,
+                    overflowY: "auto",
+                    padding: "20px"
+                }}
+            >
 
-            {messages.length === 0 ? (
+                {messages.length === 0 ? (
 
-                <div>
+                    <div
+                        style={{
+                            color: "white",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: "80vh",
+                            textAlign: "center",
+                        }}
+                    >
+                        <h1>🤖 Enterprise AI Copilot</h1>
 
-                    <h3>Welcome to Enterprise AI Copilot</h3>
+                        <p style={{color: "#cbd5e1"}}>
+                            Start a new conversation or select an existing session.
+                        </p>
+                    </div>
+                ) : (
 
-                    <p>Start a new conversation.</p>
+                messages.map((msg) => (
 
-                </div>
-            ) : (
+                    <div key={msg.id}>
 
-            messages.map((msg) => (
+                        {/* User Message */}
 
-                <div key={msg.id}>
-
-                    <p>
-                        <strong>You:</strong> 
-                        {" "}
-                        {msg.userMessage}
-                    </p>
-
-                    <div>
-
-                        <strong>AI:</strong> 
-
-                        <button
-                            onClick={() => 
-                                copyResponse(msg.aiResponse)
-                            }
-                        >
-                            <FaCopy />
-                        </button>
-
-                        <button 
-                            onClick={() => likeMessage(msg.id)}
+                        <div
                             style={{
-                                marginLeft: "10px"
+                                display: "flex",
+                                justifyContent: "flex-end",
+                                marginBottom: "10px"
                             }}
                         >
-                            {msg.liked === true ? "👍" : "👍🏻"}
-                        </button>
+                            <div
+                                style={{
+                                    
+                                    background: "#0d6efd",
+                                    boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
+                                    color: "white",
+                                    padding: "12px",
+                                    borderRadius: "15px",
+                                    maxWidth: "70%",
+                                    wordBreak: "break-word"
+                                }}
+                            >
+                                {msg.userMessage}
+                            </div>
+                        </div>
 
-                        <button
-                            onClick={() => dislikeMessage(msg.id)}
+                    {/* AI Message */}
+
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "flex-start",
+                            marginBottom: "20px"
+                        }}
+                    >
+
+                        <div
                             style={{
-                                marginLeft: "5px"
+                                background: "#ffffff",
+                                boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
+                                color: "#333",
+                                lineHeight: "1.6",
+                                padding: "12px",
+                                borderRadius: "15px",
+                                maxWidth: "70%",
+                                wordBreak: "break-word"
                             }}
                         >
-                            {msg.disliked === true ? "👎" : "👎🏻"}
-                        </button>
 
-                        <ReactMarkdown>
-                            {msg.aiResponse}
-                        </ReactMarkdown>
+                            <div
+                                style={{
+                                    marginBottom: "10px"
+                                }}
+                            >
 
+                                <button
+                                    style={{
+                                        border: "none",
+                                        background: "#f5f5f5",
+                                        padding: "6px 10px",
+                                        borderRadius: "6px",
+                                        cursor: "pointer"
+                                    }}
+                                        onClick={() =>
+                                            copyResponse(msg.aiResponse)
+                                        }
+                                >
+                                    <FaCopy />
+                                </button>
+
+                                <button
+
+                                    style={{
+                                        border: "none",
+                                        background: "#f5f5f5",
+                                        padding: "6px 10px",
+                                        borderRadius: "6px",
+                                        cursor: "pointer",
+                                        marginLeft: "10px"
+                                    }}
+                                    onClick={() => likeMessage(msg.id)}
+                                >
+                                    {msg.liked === true ? "👍" : "👍🏻"}
+                                </button>
+
+                                <button
+
+                                    style={{
+                                        border: "none",
+                                        background: "#f5f5f5",
+                                        padding: "6px 10px",
+                                        borderRadius: "6px",
+                                        cursor: "pointer",
+                                        marginLeft: "5px"
+                                    }}
+                                    onClick={() => dislikeMessage(msg.id)}
+                                        
+                                >
+                                    {msg.disliked === true ? "👎" : "👎🏻"}
+                                </button>
+
+                            </div>
+
+                            <ReactMarkdown>
+                                {msg.aiResponse}
+                            </ReactMarkdown>
+
+                        </div>
                     </div>
 
-                    <hr />
                 </div>
             ))
 
         )}
 
             {loading && (
-                <p>AI is thinking...</p>
+                <div
+                    style={{
+                        background: "#ffffff",
+                        padding: "12px",
+                        borderRadius: "12px",
+                        width: "fit-content",
+                        boxShadow: "0 1px 4px rgba(0,0,0,0.1)"
+                    }}
+                >
+                    🤖 AI is thinking...
+                </div>
             )}
 
             <div ref={messagesEndRef}></div>
 
-            <MessageInput onSend={sendMessage} />
+            </div>
+
+            <div
+                style={{
+                    padding: "20px",
+                    borderTop: "1px solid #ddd",
+                    background: "#ffffff",
+                    boxShadow: "0 -2px 8px rgba(0,0,0,0.08)"
+                }}
+            >
+                <MessageInput onSend={sendMessage} />
+            </div>
 
         </div>
     );

@@ -1,0 +1,17 @@
+pre {
+    overflow-x: auto;
+    max-width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    background: #1e1e1e;
+    color: #ffffff;
+    margin: 10px 0;
+}
+
+pre code {
+    white-space: pre;
+}
+
+code {
+    word-break: break-word;
+}

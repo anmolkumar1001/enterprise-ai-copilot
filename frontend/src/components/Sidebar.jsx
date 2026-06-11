@@ -77,11 +77,24 @@ function Sidebar({ selectedSessionId, setSelectedSessionId, refreshSessions }) {
 
     return (
 
-        <div style={{ width: "300px", borderRight: "1px solid gray", padding: "10px"}}>
+        <div style={{ width: "280px", borderRight: "1px solid #ddd", padding: "15px", background: "#1e293b", color: "white"}}>
 
-            <h3>Sessions</h3>
+            <h3 style={{ color: "white"}}>Sessions</h3>
 
-            <button onClick={createSession}>+ New Chat</button>
+            <button 
+                onClick={createSession}
+                style={{
+                    width: "100%",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "none",
+                    background: "#2563eb",
+                    color: "white",
+                    cursor: "pointer",
+                }}
+            >
+                + New Chat
+            </button>
 
             <hr />
 
@@ -94,17 +107,30 @@ function Sidebar({ selectedSessionId, setSelectedSessionId, refreshSessions }) {
                         justifyContent: "space-between",
                         alignItems: "center",
                         padding: "10px",
+                        marginTop: "8px",
+                        borderRadius: "8px",
                         cursor: "pointer",
                         background:
                            selectedSessionId === session.id 
-                            ? "#ddd"
-                            : "transparent"
+                            ? "#2563eb"
+                            : "#334155",
+                        color: "white",
+                        border: "none",
+                        boxShadow:
+                            selectedSessionId === session.id
+                            ? "0 2px 6px rgba(0,0,0,0.3)"
+                            : "none"
                     }} 
                 >
 
                     <span
                         style={{
                             cursor: "pointer",
+                            flex: 1,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            marginRight: "10px"
                         }} 
                         onClick={() => setSelectedSessionId(session.id)}
                     >
@@ -116,6 +142,12 @@ function Sidebar({ selectedSessionId, setSelectedSessionId, refreshSessions }) {
                         onClick={(e) => {
                             e.stopPropagation();
                             deleteSession(session.id);
+                        }}
+                        style={{
+                            border: "none",
+                            background: "transparent",
+                            cursor: "pointer",
+                            fontSize: "14px"
                         }} 
                     >
                        ❌     
@@ -124,9 +156,22 @@ function Sidebar({ selectedSessionId, setSelectedSessionId, refreshSessions }) {
                 </div>
             ))}
 
-            <hr />
+            <hr style={{ borderColor: "#475569" }} />
 
-            <button onClick={logout}>Logout</button>
+            <button
+                onClick={logout}
+                style={{
+                    width: "100%",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "none",
+                    background: "#dc3545",
+                    color: "white",
+                    cursor: "pointer"
+                }}
+            >
+                Logout
+            </button>
 
         </div>
     );
