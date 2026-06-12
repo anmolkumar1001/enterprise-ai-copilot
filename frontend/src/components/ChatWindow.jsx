@@ -84,7 +84,7 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
 
         navigator.clipboard.writeText(text);
 
-        alert("Copied to clipboard!");
+        // alert("Copied to clipboard!");
     };
 
     const likeMessage = async(id) => {
@@ -142,7 +142,8 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
                 display: "flex",
                 flexDirection: "column",
                 background: "#0f172a",
-                height: "100vh"
+                minHeight: "100vh",
+                width: "100%"
             }}
         >
 

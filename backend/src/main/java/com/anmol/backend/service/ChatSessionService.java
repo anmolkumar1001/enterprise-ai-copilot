@@ -52,7 +52,7 @@ public class ChatSessionService {
 
         ChatSession session = chatSessionRepository
                 .findById(sessionId)
-                .orElseThrow();
+                .orElseThrow(() -> new RuntimeException("Session not found"));
 
         session.setTitle(title);
 

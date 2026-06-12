@@ -44,6 +44,12 @@ public class ChatSessionController {
         return chatSessionService.renameSession(id, request.getTitle());
     }
 
+    @PutMapping("/{id}/rename")
+    public ChatSession renameSession(@PathVariable Long id, @RequestParam String title) {
+
+        return chatSessionService.renameSession(id, title);
+    }
+
     @DeleteMapping("/{id}")
     public String deleteSession(@PathVariable Long id) {
 

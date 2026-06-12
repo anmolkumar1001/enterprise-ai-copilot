@@ -20,6 +20,7 @@ function MessageInput({ onSend }) {
         <div
             style={{
                 display: "flex",
+                width: "100%",
                 gap: "10px",
                 alignItems: "center"
             }}
@@ -36,9 +37,9 @@ function MessageInput({ onSend }) {
                 placeholder="Ask anything..."
                 style={{
                     flex: 1,
-                    padding: "14px 18px",
-                    borderRadius: "12px",
-                    border: "1px solid #d1d5db",
+                    padding: "12px",
+                    borderRadius: "10px",
+                    border: "1px solid #555",
                     fontSize: "16px",
                     outline: "none"
                 }}
@@ -47,8 +48,8 @@ function MessageInput({ onSend }) {
             <button
                 onClick={handleSend}
                 style={{
-                    padding: "14px 22px",
-                    borderRadius: "12px",
+                    padding: "12px 20px",
+                    borderRadius: "10px",
                     border: "none",
                     background: "#2563eb",
                     color: "white",

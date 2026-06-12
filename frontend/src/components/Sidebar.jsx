@@ -3,9 +3,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 
-function Sidebar({ selectedSessionId, setSelectedSessionId, refreshSessions }) {
+function Sidebar({ selectedSessionId, setSelectedSessionId, refreshSessions, sidebarOpen, setSidebarOpen }) {
 
     const [sessions, setSessions] = useState([]);
+
+    const [searchTerm, setSearchTerm] = useState("");
 
     const navigate = useNavigate();
 
@@ -68,6 +70,36 @@ function Sidebar({ selectedSessionId, setSelectedSessionId, refreshSessions }) {
         }
     };
 
+    const renameSession = async(sessionId, currentTitle) => {
+
+        const newTitle = prompt("Enter new session title:", currentTitle);
+
+        if(!newTitle || newTitle.trim() === "") {
+            return;
+        }
+
+        try {
+
+            await api.put(`/sessions/${sessionId}/rename?title=${encodeURIComponent(newTitle)}`);
+
+            setSessions(prev => 
+                prev.map(session => 
+                    session.id === sessionId ? {...session, title: newTitle} : session
+                )
+            );
+        }
+        catch(error) {
+
+            console.error(error);
+
+            alert("Failed to rename session");
+        }
+    };
+
+    const filteredSessions = sessions.filter(session => 
+        session.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     const logout = () => {
 
         localStorage.removeItem("token");
@@ -77,9 +109,35 @@ function Sidebar({ selectedSessionId, setSelectedSessionId, refreshSessions }) {
 
     return (
 
-        <div style={{ width: "280px", borderRight: "1px solid #ddd", padding: "15px", background: "#1e293b", color: "white"}}>
+        <div 
+            className={`sidebar ${sidebarOpen ? "open" : ""}`}
+            style={{ 
+                width: "280px", 
+                borderRight: "1px solid #ddd", 
+                padding: "15px", 
+                background: "#1e293b", 
+                color: "white"
+            }}
+        >
 
             <h3 style={{ color: "white"}}>Sessions</h3>
+
+            <input
+                type="text"
+                placeholder="Search sessions..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{
+                    width: "100%",
+                    padding: "10px",
+                    marginBottom: "10px",
+                    borderRadius: "8px",
+                    border: "1px solid #555",
+                    background: "#334155",
+                    color: "white",
+                    boxSizing: "border-box"
+                }} 
+            />
 
             <button 
                 onClick={createSession}
@@ -98,7 +156,19 @@ function Sidebar({ selectedSessionId, setSelectedSessionId, refreshSessions }) {
 
             <hr />
 
-            {sessions.map((session) => (
+            {filteredSessions.length === 0 && (
+                <p
+                    style={{
+                        textAlign: "center",
+                        color: "#94a3b8",
+                        marginTop: "20px"
+                    }}
+                >
+                    No sessions found
+                </p>
+            )}
+
+            {filteredSessions.map((session) => (
                 <div
                     key={session.id}
                     onClick={() => setSelectedSessionId(session.id)}
@@ -138,20 +208,47 @@ function Sidebar({ selectedSessionId, setSelectedSessionId, refreshSessions }) {
                         {session.title}
                     </span>
 
-                    <button 
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            deleteSession(session.id);
-                        }}
+
+
+                    <div
                         style={{
-                            border: "none",
-                            background: "transparent",
-                            cursor: "pointer",
-                            fontSize: "14px"
-                        }} 
+                            display: "flex",
+                            gap: "5px"
+                        }}
                     >
-                       ❌     
-                    </button>
+
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                renameSession(
+                                    session.id,
+                                    session.title
+                                );
+                            }}
+                            style={{
+                                border: "none",
+                                background: "transparent",
+                                cursor: "pointer"
+                            }}
+                        >
+                            ✏️
+                        </button>
+
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                deleteSession(session.id);
+                            }}
+                            style={{
+                                border: "none",
+                                background: "transparent",
+                                cursor: "pointer"
+                            }}
+                        >
+                            ❌
+                        </button>
+
+                    </div>
 
                 </div>
             ))}
