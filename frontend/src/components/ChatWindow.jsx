@@ -4,6 +4,10 @@ import api from "../api/axiosConfig";
 import ReactMarkdown from "react-markdown";
 import { FaCopy } from "react-icons/fa";
 import "../styles/chat.css";
+// import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+// import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+
+import ProfileDropdown from "./ProfileDropdown";
 
 function ChatWindow({ sessionId, setRefreshSessions }) {
 
@@ -149,6 +153,18 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
 
             <div
                 style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    padding: "15px 20px",
+                    borderBottom: "1px solid #334155",
+                    background: "#0f172a"
+                }}
+            >
+                <ProfileDropdown />
+            </div>
+
+            <div
+                style={{
                     flex: 1,
                     overflowY: "auto",
                     padding: "20px"
@@ -282,9 +298,30 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
 
                             </div>
 
-                            <ReactMarkdown>
+                            <ReactMarkdown
+                                components={{
+                                    code({ className, children }) {
+
+                                        return (
+                                            <pre
+                                                style={{
+                                                    background: "#1e1e1e",
+                                                    color: "white",
+                                                    padding: "12px",
+                                                    borderRadius: "8px",
+                                                    overflowX: "auto",
+                                                    whiteSpace: "pre-wrap"
+                                                }}
+                                            >
+                                                <code>{String(children)}</code>
+                                            </pre>
+                                        );
+                                    }
+                                }}
+                            >
                                 {msg.aiResponse}
                             </ReactMarkdown>
+                            
 
                         </div>
                     </div>

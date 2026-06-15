@@ -1,4 +1,4 @@
-pre {
+/* pre {
     overflow-x: auto;
     max-width: 100%;
     padding: 12px;
@@ -14,4 +14,9 @@ pre code {
 
 code {
     word-break: break-word;
+} */
+
+pre {
+    overflow-x: auto;
+    max-width: 100%;
 }
