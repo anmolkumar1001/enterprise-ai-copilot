@@ -1,13 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function ProfileDropDown() {
+function ProfileDropDown({theme, setTheme}) {
 
     const [open, setOpen] = useState(false);
 
     const navigate = useNavigate();
 
     const username = localStorage.getItem("username") || "User";
+
+    const toggleTheme = () => {
+
+        setTheme(
+            theme === "dark" ? "light" : "dark"
+        );
+    };
 
     const logout = () => {
 
@@ -64,6 +71,23 @@ function ProfileDropDown() {
                     >
                         {username}
                     </div>
+
+                    <button
+                        onClick={toggleTheme}
+                        style={{
+                            width: "100%",
+                            padding: "12px",
+                            border: "none",
+                            background: "white",
+                            cursor: "pointer",
+                            textAlign: "left",
+                            color: "#333"
+                        }}
+                    >
+                        {theme === "dark"
+                            ? "☀️ Light Mode"
+                            : "🌙 Dark Mode"}
+                    </button>
 
                     <button
                         onClick={logout}

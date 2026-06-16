@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 
-function Sidebar({ selectedSessionId, setSelectedSessionId, refreshSessions, sidebarOpen, setSidebarOpen }) {
+function Sidebar({ selectedSessionId, setSelectedSessionId, refreshSessions, sidebarOpen, setSidebarOpen, theme }) {
 
     const [sessions, setSessions] = useState([]);
 
@@ -113,14 +113,33 @@ function Sidebar({ selectedSessionId, setSelectedSessionId, refreshSessions, sid
             className={`sidebar ${sidebarOpen ? "open" : ""}`}
             style={{ 
                 width: "280px", 
+                height: "100vh",
+                overflowY: "auto",
                 borderRight: "1px solid #ddd", 
                 padding: "15px", 
-                background: "#1e293b", 
-                color: "white"
+                background:
+                    theme === "dark"
+                        ? "#1e293b"
+                        : "#ffffff",
+
+                color:
+                    theme === "dark"
+                    ? "white"
+                    : "#111827",
+                boxSizing: "border-box"
             }}
         >
 
-            <h3 style={{ color: "white"}}>Sessions</h3>
+            <h3 
+                style={{ 
+                    color:
+                        theme === "dark"
+                            ? "white"
+                            : "#111827"
+                }}
+            >
+                Sessions
+            </h3>
 
             <input
                 type="text"
@@ -132,9 +151,20 @@ function Sidebar({ selectedSessionId, setSelectedSessionId, refreshSessions, sid
                     padding: "10px",
                     marginBottom: "10px",
                     borderRadius: "8px",
-                    border: "1px solid #555",
-                    background: "#334155",
-                    color: "white",
+                    background:
+                        theme === "dark"
+                            ? "#334155"
+                            : "#f8fafc",
+
+                    color:
+                        theme === "dark"
+                        ? "white"
+                        : "#111827",
+
+                    border:
+                        theme === "dark"
+                            ? "1px solid #555"
+                            : "1px solid #d1d5db",
                     boxSizing: "border-box"
                 }} 
             />
@@ -160,7 +190,10 @@ function Sidebar({ selectedSessionId, setSelectedSessionId, refreshSessions, sid
                 <p
                     style={{
                         textAlign: "center",
-                        color: "#94a3b8",
+                        color:
+                            theme === "dark"
+                            ? "#94a3b8"
+                            : "#6b7280",
                         marginTop: "20px"
                     }}
                 >
@@ -181,10 +214,22 @@ function Sidebar({ selectedSessionId, setSelectedSessionId, refreshSessions, sid
                         borderRadius: "8px",
                         cursor: "pointer",
                         background:
-                           selectedSessionId === session.id 
-                            ? "#2563eb"
-                            : "#334155",
-                        color: "white",
+                            selectedSessionId === session.id
+                                ? "#2563eb"
+                                : (
+                                    theme === "dark"
+                                        ? "#334155"
+                                        : "#f3f4f6"
+                                ),
+
+                        color:
+                            selectedSessionId === session.id
+                                ? "white"
+                                : (
+                                    theme === "dark"
+                                        ? "white"
+                                        : "#111827"
+                                ),
                         border: "none",
                         boxShadow:
                             selectedSessionId === session.id
@@ -253,22 +298,32 @@ function Sidebar({ selectedSessionId, setSelectedSessionId, refreshSessions, sid
                 </div>
             ))}
 
-            <hr style={{ borderColor: "#475569" }} />
+            <div style={{ marginTop: "auto" }}>
 
-            <button
-                onClick={logout}
-                style={{
-                    width: "100%",
-                    padding: "10px",
-                    borderRadius: "8px",
-                    border: "none",
-                    background: "#dc3545",
-                    color: "white",
-                    cursor: "pointer"
-                }}
-            >
-                Logout
-            </button>
+                <hr
+                    style={{
+                        borderColor:
+                            theme === "dark"
+                                ? "#475569"
+                                : "#d1d5db"
+                    }}
+                />
+
+                <button
+                    onClick={logout}
+                    style={{
+                        width: "100%",
+                        padding: "10px",
+                        borderRadius: "8px",
+                        border: "none",
+                        background: "#dc3545",
+                        color: "white",
+                        cursor: "pointer"
+                    }}
+                >
+                    Logout
+                </button>
+            </div>
 
         </div>
     );

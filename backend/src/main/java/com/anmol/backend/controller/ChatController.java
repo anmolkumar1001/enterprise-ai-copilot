@@ -51,6 +51,12 @@ public class ChatController {
         return chatService.likeMessage(id);
     }
 
+    @PutMapping("/{id}/regenerate")
+    public Chat regenerateResponse(@PathVariable Long id) {
+
+        return chatService.regenerateResponse(id);
+    }
+
     @PutMapping("/{id}/dislike")
     public Chat dislikeMessage(@PathVariable Long id) {
         return chatService.dislikeMessage(id);

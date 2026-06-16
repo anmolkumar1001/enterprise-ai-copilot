@@ -8,11 +8,14 @@ import "../styles/chat.css";
 // import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 import ProfileDropdown from "./ProfileDropdown";
+import jsPDF from "jspdf";
+import { WiAlien } from "react-icons/wi";
 
-function ChatWindow({ sessionId, setRefreshSessions }) {
+function ChatWindow({ sessionId, setRefreshSessions, theme, setTheme }) {
 
     const[messages, setMessages] = useState([]);
     const[loading, setLoading] = useState(false);
+    const[typingMessageId, setTypingMessageId] = useState(null);
 
     const messagesEndRef = useRef(null);
 
@@ -47,6 +50,45 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
         }
     };
 
+    const animateResponse = (chat) => {
+
+        let index = 0;
+
+        const fullText = chat.aiResponse; // "Hello, how are you?" (complete text)
+
+        // marks this message as "currently typing"
+        // used to show a blinking cursor or loading indicator in UI
+        setTypingMessageId(chat.id);
+
+        const interval = setInterval(() => {
+
+            index++;
+
+            setMessages(prev => 
+                prev.map(msg => 
+                    msg.id === chat.id // find the correct message
+                        ? {
+                            ...msg,
+                            aiResponse: fullText.substring(0, index) // slice text
+                        }
+                        : msg // other messages stay unchanged
+                )
+            );
+
+            if(index >= fullText.length) {
+
+                clearInterval(interval); // STOP the timer
+                
+                setTypingMessageId(null); // remove typing indicator
+            }
+        }, 10); // runs every 10 milliseconds
+        // Every 10ms:
+        // index = 1 → "H"
+        // index = 2 → "He"
+        // index = 3 → "Hel"
+        // ... and so on
+    };
+
     const sendMessage = async (message) => {
 
         if(!sessionId) {
@@ -70,7 +112,15 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
 
             console.log(response.data);
 
-            setMessages(prev => [...prev, response.data]);
+            // setMessages(prev => [...prev, response.data]);
+            const chat = {
+                ...response.data,
+                aiResponse: ""
+            };
+
+            setMessages(prev => [...prev, chat]);
+
+            animateResponse(response.data);
 
             setRefreshSessions(prev => !prev);
         }
@@ -89,6 +139,100 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
         navigator.clipboard.writeText(text);
 
         // alert("Copied to clipboard!");
+    };
+
+    const exportChatAsTxt = () => {
+
+        let content = "";
+
+        messages.forEach((msg) => {
+
+            content += `User:\n${msg.userMessage}\n\n`;
+            content += `AI:\n${msg.aiResponse}\n\n`;
+            content += "---------------------------------\n\n";
+        });
+
+        // Convert the text string into a Blob (binary file-like object)
+        const blob = new Blob(
+            [content],
+            {type: "text/plain"}
+        );
+
+        // Create a temporary URL pointing to the Blob file
+        // This URL can be used to download the file
+        const url = window.URL.createObjectURL(blob);
+
+        // Create a fake invisible <a> (anchor/link) element in the DOM
+        const link = document.createElement("a");
+
+        // Set the link's href to the blob URL (the file to download)
+        link.href = url;
+
+        // Set the filename for the downloaded file
+        link.download = "chat-history.txt";
+
+        link.click();
+
+        // Clean up — revoke the blob URL to free up browser memory
+        // The URL is no longer needed after the download starts
+        window.URL.revokeObjectURL(url);
+    };
+
+    const exportChatAsPdf = () => {
+
+        const doc = new jsPDF();
+
+        // 'y' is the vertical position (in mm) where text will be printed
+        // Start at y=10 (10mm from the top of the page)
+        let y = 10;
+
+        messages.forEach((msg, index) => {
+
+            
+            const userText = String(msg.userMessage || "");
+            const aiText = String(msg.aiResponse || "");
+
+            const userLines = doc.splitTextToSize(
+                `User: ${userText}`,
+                180
+            );
+
+            doc.text(userLines, 10, y);
+
+            y += userLines.length * 8;
+
+            // Split the AI response into multiple lines so it fits within page width
+            // 180 = max width in mm (A4 page is 210mm, minus margins = ~180mm)
+            // This prevents text from going off the right edge of the page
+            const aiLines = doc.splitTextToSize(
+                `AI: ${aiText}`,
+                180
+            );
+
+            // Print all the AI response lines starting at current y position
+            doc.text(aiLines, 10, y);
+
+            // Move y down based on how many lines the AI response took
+            // Each line takes 8mm of vertical space
+            y += aiLines.length * 8;
+
+            doc.text(
+                "-------------------------",
+                10,
+                y
+            );
+
+            y += 10;
+
+            // Check if we're near the bottom of the page (270mm is close to A4 bottom)
+            // A4 page height is 297mm, so 270 gives a small bottom margin
+            if(y > 270) {
+                doc.addPage();
+                y = 10;
+            }
+        });
+
+        doc.save("chat-history.pdf");
     };
 
     const likeMessage = async(id) => {
@@ -139,13 +283,57 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
         }
     };
 
+    const regenerateResponse = async(id) => {
+
+        try {
+
+            const response = await api.put(
+                `/chat/${id}/regenerate`
+            );
+
+            setMessages(prev =>
+                prev.map(msg => 
+                    msg.id === id
+                        ? response.data
+                        : msg
+                )
+            );
+        }
+        catch(error) {
+
+            console.log(error);
+            alert("Failed to regenerate response");
+        }
+    };
+
+    const deleteMessage = async(id) => {
+
+        try {
+
+            await api.delete(`/chat/${id}`)
+
+            setMessages(prev => 
+                prev.filter(msg => msg.id !== id)
+            );
+        }
+        catch(error) {
+
+            console.error(error);
+
+            alert("Failed to delete message");
+        }
+    };
+
     return (
 
         <div style={{ 
                 flex: 1, 
                 display: "flex",
                 flexDirection: "column",
-                background: "#0f172a",
+                background: 
+                    theme === "dark"
+                        ? "#0f172a"
+                        : "#f8fafc",
                 minHeight: "100vh",
                 width: "100%"
             }}
@@ -156,11 +344,20 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
                     display: "flex",
                     justifyContent: "flex-end",
                     padding: "15px 20px",
-                    borderBottom: "1px solid #334155",
-                    background: "#0f172a"
+                    borderBottom: 
+                        theme === "dark"
+                            ? "1px solid #334155"
+                            : "1px solid #e5e7eb",
+                    background:
+                        theme === "dark" 
+                            ? "#0f172a"
+                            : "#ffffff",
                 }}
             >
-                <ProfileDropdown />
+                <ProfileDropdown
+                    theme={theme}
+                    setTheme={setTheme} 
+                />
             </div>
 
             <div
@@ -170,6 +367,45 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
                     padding: "20px"
                 }}
             >
+
+                {messages.length > 0 && (
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            padding: "10px"
+                        }}
+                    >
+                        <button
+                            onClick={exportChatAsTxt}
+                            style={{
+                                padding: "10px 15px",
+                                border: "none",
+                                borderRadius: "8px",
+                                background: "#16a34a",
+                                color: "white",
+                                cursor: "pointer"
+                            }}
+                        >
+                            📄 Export TXT
+                        </button>
+
+                        <button
+                            onClick={exportChatAsPdf}
+                            style={{
+                                padding: "10px 15px",
+                                border: "none",
+                                borderRadius: "8px",
+                                background: "#dc2626",
+                                color: "white",
+                                cursor: "pointer",
+                                marginLeft: "10px"
+                            }}
+                        >
+                            📄 Export PDF
+                        </button>
+                    </div>
+                )}
 
                 {messages.length === 0 ? (
 
@@ -184,9 +420,20 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
                             textAlign: "center",
                         }}
                     >
-                        <h1>🤖 Enterprise AI Copilot</h1>
+                        <h1 
+                            style={{
+                                color: theme === "dark" ? "white" : "#111827"
+                            }}
+                        >
+                            🤖 Enterprise AI Copilot</h1>
 
-                        <p style={{color: "#cbd5e1"}}>
+                        <p 
+                            style={{
+                                color: theme === "dark"
+                                    ? "#cbd5e1"
+                                    : "#6b7280"
+                            }}
+                        >
                             Start a new conversation or select an existing session.
                         </p>
                     </div>
@@ -233,9 +480,15 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
 
                         <div
                             style={{
-                                background: "#ffffff",
+                                background:
+                                    theme === "dark"
+                                        ? "#1e293b"
+                                        : "#ffffff",
                                 boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-                                color: "#333",
+                                color:
+                                    theme === "dark"
+                                        ? "#f8fafc"
+                                        : "#333",
                                 lineHeight: "1.6",
                                 padding: "12px",
                                 borderRadius: "15px",
@@ -253,7 +506,14 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
                                 <button
                                     style={{
                                         border: "none",
-                                        background: "#f5f5f5",
+                                        background:
+                                            theme === "dark"
+                                                ? "#334155"
+                                                : "#f5f5f5",
+                                        color:
+                                            theme === "dark"
+                                                ? "white"
+                                                : "#333",
                                         padding: "6px 10px",
                                         borderRadius: "6px",
                                         cursor: "pointer"
@@ -269,7 +529,14 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
 
                                     style={{
                                         border: "none",
-                                        background: "#f5f5f5",
+                                        background:
+                                            theme === "dark"
+                                                ? "#334155"
+                                                : "#f5f5f5",
+                                        color:
+                                            theme === "dark"
+                                                ? "white"
+                                                : "#333",
                                         padding: "6px 10px",
                                         borderRadius: "6px",
                                         cursor: "pointer",
@@ -284,7 +551,14 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
 
                                     style={{
                                         border: "none",
-                                        background: "#f5f5f5",
+                                        background:
+                                            theme === "dark"
+                                                ? "#334155"
+                                                : "#f5f5f5",
+                                        color:
+                                            theme === "dark"
+                                                ? "white"
+                                                : "#333",
                                         padding: "6px 10px",
                                         borderRadius: "6px",
                                         cursor: "pointer",
@@ -295,6 +569,36 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
                                 >
                                     {msg.disliked === true ? "👎" : "👎🏻"}
                                 </button>
+
+                                <button
+                                    onClick={() =>
+                                        regenerateResponse(msg.id)
+                                    }
+                                    style={{
+                                        border: "none",
+                                        background: "#f5f5f5",
+                                        padding: "6px 10px",
+                                        borderRadius: "6px",
+                                        cursor: "pointer",
+                                        marginLeft: "5px"
+                                    }}
+                                >
+                                    🔄
+                            </button>
+                            
+                            <button
+                                onClick={() => deleteMessage(msg.id)}
+                                style={{
+                                    border: "none",
+                                    background: "#f5f5f5",
+                                    padding: "6px 10px",
+                                    borderRadius: "6px",
+                                    cursor: "pointer",
+                                    marginLeft: "5px"
+                                }}
+                            >
+                                🗑️
+                            </button>
 
                             </div>
 
@@ -319,10 +623,11 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
                                     }
                                 }}
                             >
-                                {msg.aiResponse}
+                                {(msg.aiResponse || "") +
+                                    (typingMessageId === msg.id ? "▋" : "")
+                                }
                             </ReactMarkdown>
                             
-
                         </div>
                     </div>
 
@@ -334,7 +639,15 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
             {loading && (
                 <div
                     style={{
-                        background: "#ffffff",
+                        background:
+                            theme === "dark"
+                                ? "#1e293b"
+                                : "#ffffff",
+
+                        color:
+                            theme === "dark"
+                            ? "white"
+                            : "#333",
                         padding: "12px",
                         borderRadius: "12px",
                         width: "fit-content",
@@ -352,8 +665,15 @@ function ChatWindow({ sessionId, setRefreshSessions }) {
             <div
                 style={{
                     padding: "20px",
-                    borderTop: "1px solid #ddd",
-                    background: "#ffffff",
+                    background:
+                        theme === "dark"
+                            ? "#1e293b"
+                            : "#ffffff",
+
+                    borderTop:
+                        theme === "dark"
+                            ? "1px solid #334155"
+                            : "1px solid #ddd",
                     boxShadow: "0 -2px 8px rgba(0,0,0,0.08)"
                 }}
             >

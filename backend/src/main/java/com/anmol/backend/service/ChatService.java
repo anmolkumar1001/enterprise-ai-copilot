@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ChatService {
@@ -135,7 +137,31 @@ public class ChatService {
         return chatRepository.save(chat);
     }
 
+    public Chat regenerateResponse(Long id) {
+
+        Chat chat = chatRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Chat not found"));
+
+        List<Map<String, String>> messages = new ArrayList<>();
+
+        messages.add(
+                Map.of(
+                        "role",
+                        "user",
+                        "content",
+                        chat.getUserMessage()
+                )
+        );
+
+        String newResponse = aiService.getResponse(messages);
+
+        chat.setAiResponse(newResponse);
+
+        return chatRepository.save(chat);
+    }
+
     public void deleteChat(Long id) {
+
         chatRepository.deleteById(id);
     }
 }
