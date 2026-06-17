@@ -235,6 +235,42 @@ function ChatWindow({ sessionId, setRefreshSessions, theme, setTheme }) {
         doc.save("chat-history.pdf");
     };
 
+    const uploadPdf = async(event) => {
+
+        const file = event.target.files[0];
+
+        if(!file) {
+            return;
+        }
+
+        const formData = new FormData();
+
+        formData.append("file", file);
+
+        try {
+
+            const response = await api.post(
+                "/documents/upload",
+                formData,
+                {
+                    headers: {
+                        "Content-Type" : "multipart/form-data"
+                    }
+                }
+            );
+
+            console.log(response.data);
+
+            alert("PDF uploaded seccessfully!");
+        }
+        catch(error) {
+
+            console.log(error);
+
+            alert("Failed to upload PDF");
+        }
+    };
+
     const likeMessage = async(id) => {
 
         try {
@@ -291,13 +327,20 @@ function ChatWindow({ sessionId, setRefreshSessions, theme, setTheme }) {
                 `/chat/${id}/regenerate`
             );
 
+            const animatedChat = {
+                ...response.data,
+                aiResponse: ""
+            };
+
             setMessages(prev =>
                 prev.map(msg => 
                     msg.id === id
-                        ? response.data
+                        ? animatedChat
                         : msg
                 )
             );
+
+            animateResponse(response.data);
         }
         catch(error) {
 
@@ -373,9 +416,31 @@ function ChatWindow({ sessionId, setRefreshSessions, theme, setTheme }) {
                         style={{
                             display: "flex",
                             justifyContent: "flex-end",
-                            padding: "10px"
+                            padding: "10px",
+                            gap: "10px",
+                            flexWrap: "wrap"
                         }}
                     >
+
+                        <label
+                            style={{
+                                padding: "10px 15px",
+                                borderRadius: "8px",
+                                background: "#2563eb",
+                                color: "white",
+                                cursor: "pointer"
+                            }}
+                        >
+                            📤 Upload PDF
+
+                        <input
+                            type="file"
+                            accept=".pdf"
+                            onChange={uploadPdf}
+                            style={{ display: "none" }}
+                        />
+                        </label>
+
                         <button
                             onClick={exportChatAsTxt}
                             style={{

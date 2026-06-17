@@ -30,6 +30,9 @@ public class ChatService {
     @Autowired
     private AIService aiService;
 
+    @Autowired
+    private DocumentService documentService;
+
     public Chat createChat(Long sessionId, String email, ChatRequest request) {
 
         User user = userRepository.findByEmail(email)
@@ -66,7 +69,11 @@ public class ChatService {
         );
 
         // call Groq with full history
-        String aiResponse = aiService.getResponse(messages);
+//        String aiResponse = aiService.getResponse(messages);
+
+        String documentContext = documentService.getAllDocumentContent();
+
+        String aiResponse = aiService.getResponse(messages, documentContext);
 
         Chat chat = new Chat();
 
@@ -153,7 +160,14 @@ public class ChatService {
                 )
         );
 
-        String newResponse = aiService.getResponse(messages);
+        String documentContext =
+                documentService.getAllDocumentContent();
+
+        String newResponse =
+                aiService.getResponse(
+                        messages,
+                        documentContext
+                );
 
         chat.setAiResponse(newResponse);
 

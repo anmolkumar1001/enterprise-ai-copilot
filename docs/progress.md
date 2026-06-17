@@ -501,3 +501,46 @@ Enterprise AI Copilot now supports:
 * Extract document content.
 * Integrate LangChain4j for retrieval.
 * Connect retrieved context with Groq responses.
+
+# Day 14 Progress
+
+## Completed Today
+
+### Backend
+
+* Added PDF upload functionality.
+* Implemented PDF text extraction using Apache PDFBox.
+* Created Document entity and repository.
+* Added Document upload API endpoint.
+* Stored extracted document content in PostgreSQL.
+* Fixed PostgreSQL TEXT/Large Object issues.
+* Added document retrieval service.
+* Integrated document content with AI prompts.
+
+### Frontend
+
+* Added Upload PDF button.
+* Connected PDF upload API.
+* Verified PDF upload from UI.
+* Maintained responsive layout for desktop and mobile.
+
+### Testing
+
+* Successfully uploaded PDF files.
+* Verified extracted content is stored in database.
+* Verified AI can answer questions from uploaded documents.
+
+## Current Status
+
+* PDF Upload: Completed
+* Document Storage: Completed
+* Basic RAG Context Injection: Completed
+* Document-based Q&A: Working
+
+## Pending
+
+* Improve RAG using vector search (LangChain4j).
+* Add document selection/removal UI.
+* Restrict AI to answer only from uploaded documents when required.
+* Show uploaded document list in frontend.
+
