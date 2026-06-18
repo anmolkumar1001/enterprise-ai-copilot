@@ -25,4 +25,8 @@ public class Document {
     private String content;
 
     private LocalDateTime uploadedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "session_id")
+    private ChatSession session;
 }

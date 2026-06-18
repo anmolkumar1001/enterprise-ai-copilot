@@ -125,25 +125,25 @@ DELETE /api/chat/{id}
 
 ## Completed Features
 
-### ✅ AI Service Integration
+### AI Service Integration
 
 * Integrated Groq LLM API with Spring Boot.
 * Configured API key using environment variables.
 * Created service layer for AI communication.
 
-### ✅ AI Chat Response Generation
+### AI Chat Response Generation
 
 * User messages are sent to Groq API.
 * AI-generated responses are received dynamically.
 * Responses are stored in the database.
 
-### ✅ Chat Persistence
+### Chat Persistence
 
 * User prompt stored in `userMessage`.
 * AI reply stored in `aiResponse`.
 * Chat history saved with timestamp.
 
-### ✅ Chat API Updated
+### Chat API Updated
 
 * POST `/api/chat`
 
@@ -152,12 +152,12 @@ DELETE /api/chat/{id}
   * Stores AI response
   * Returns complete chat object
 
-### ✅ Security Integration
+### Security Integration
 
 * JWT authentication working with chat endpoints.
 * Authenticated user automatically linked to chats.
 
-### ✅ Database Integration
+### Database Integration
 
 * Chat entity persisted successfully.
 * User-to-chat relationship working correctly.
@@ -399,7 +399,7 @@ Enterprise AI Copilot now supports:
 
 # Day 11 Progress
 
-## Phase 1 - Chat UI Enhancement ✅
+## Phase 1 - Chat UI Enhancement
 
 ### Completed
 - Added modern user and AI message bubbles
@@ -413,7 +413,7 @@ Enterprise AI Copilot now supports:
 
 ---
 
-## Phase 2 - Sidebar & Input Enhancement ✅
+## Phase 2 - Sidebar & Input Enhancement
 
 ### Completed
 - Redesigned sidebar with dark theme
@@ -429,7 +429,7 @@ Enterprise AI Copilot now supports:
 
 ---
 
-## Bug Fixes ✅
+## Bug Fixes
 
 - Fixed deleted session still showing chats until refresh
 - Fixed session deletion cascade issue
@@ -544,3 +544,12 @@ Enterprise AI Copilot now supports:
 * Restrict AI to answer only from uploaded documents when required.
 * Show uploaded document list in frontend.
 
+# Day 15
+
+- Added session-document relationship
+- Upload PDF with sessionId
+- Store document against specific chat session
+- Load documents by session
+- Show uploaded documents in UI
+- AI uses only current session documents
+- Regenerate response also uses session documents

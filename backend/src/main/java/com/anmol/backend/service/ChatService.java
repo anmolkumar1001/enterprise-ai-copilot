@@ -71,7 +71,7 @@ public class ChatService {
         // call Groq with full history
 //        String aiResponse = aiService.getResponse(messages);
 
-        String documentContext = documentService.getAllDocumentContent();
+        String documentContext = documentService.getDocumentContentBySession(sessionId);
 
         String aiResponse = aiService.getResponse(messages, documentContext);
 
@@ -160,14 +160,13 @@ public class ChatService {
                 )
         );
 
+        Long sessionId = chat.getSession().getId();
+
         String documentContext =
-                documentService.getAllDocumentContent();
+                documentService.getDocumentContentBySession(sessionId);
 
         String newResponse =
-                aiService.getResponse(
-                        messages,
-                        documentContext
-                );
+                aiService.getResponse(messages, documentContext);
 
         chat.setAiResponse(newResponse);
 

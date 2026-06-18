@@ -16,14 +16,20 @@ public class DocumentController {
     private DocumentService documentService;
 
     @PostMapping("/upload")
-    public Document uploadPdf(@RequestParam("file")MultipartFile file) throws Exception {
+    public Document uploadPdf(@RequestParam("file") MultipartFile file, @RequestParam Long sessionId) throws Exception {
 
-        return documentService.uploadPdf(file);
+        return documentService.uploadPdf(file, sessionId);
     }
 
     @GetMapping
     public List<Document> getAllDocuments() {
 
         return documentService.getAllDocuments();
+    }
+
+    @GetMapping("/{sessionId}")
+    public List<Document> getDocumentsBySession(@PathVariable Long sessionId) {
+
+        return documentService.getDocumentsBySession(sessionId);
     }
 }

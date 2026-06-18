@@ -1,6 +1,8 @@
 package com.anmol.backend.service;
 
+import com.anmol.backend.entity.ChatSession;
 import com.anmol.backend.entity.Document;
+import com.anmol.backend.repository.ChatSessionRepository;
 import com.anmol.backend.repository.DocumentRepository;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -17,7 +19,13 @@ public class DocumentService {
     @Autowired
     private DocumentRepository documentRepository;
 
-    public Document uploadPdf(MultipartFile file) throws Exception {
+    @Autowired
+    private ChatSessionRepository chatSessionRepository;
+
+    public Document uploadPdf(MultipartFile file, Long sessionId) throws Exception {
+
+        ChatSession session = chatSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
 
         PDDocument pdf = PDDocument.load(file.getInputStream());
 
@@ -32,6 +40,8 @@ public class DocumentService {
         document.setFileName(file.getOriginalFilename());
         document.setContent(content);
         document.setUploadedAt(LocalDateTime.now());
+
+        document.setSession(session);
 
         return documentRepository.save(document);
     }
@@ -50,6 +60,36 @@ public class DocumentService {
         for(Document doc : documents) {
 
             context.append(doc.getContent()).append("\n\n");
+        }
+
+        return context.toString();
+    }
+
+    public List<Document> getDocumentsBySession(Long sessionId) {
+
+        ChatSession session = chatSessionRepository.findById(sessionId)
+                .orElseThrow(() -> new RuntimeException("Session not found"));
+
+        return documentRepository.findBySessionOrderByUploadedAtDesc(session);
+    }
+
+    public String getDocumentContentBySession(
+            Long sessionId) {
+
+        ChatSession session =
+                chatSessionRepository.findById(sessionId)
+                        .orElseThrow(() ->
+                                new RuntimeException("Session not found"));
+
+        List<Document> documents =
+                documentRepository.findBySessionOrderByUploadedAtDesc(session);
+
+        StringBuilder context = new StringBuilder();
+
+        for(Document doc : documents) {
+
+            context.append(doc.getContent())
+                    .append("\n\n");
         }
 
         return context.toString();

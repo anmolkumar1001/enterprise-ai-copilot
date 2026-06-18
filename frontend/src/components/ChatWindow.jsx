@@ -17,6 +17,8 @@ function ChatWindow({ sessionId, setRefreshSessions, theme, setTheme }) {
     const[loading, setLoading] = useState(false);
     const[typingMessageId, setTypingMessageId] = useState(null);
 
+    const[documents, setDocuments] = useState([]);
+
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
@@ -33,6 +35,13 @@ function ChatWindow({ sessionId, setRefreshSessions, theme, setTheme }) {
 
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
+
+    useEffect(() => {
+
+        if(sessionId) {
+            loadDocuments();
+        }
+    }, [sessionId]);
 
     const loadMessages = async () => {
 
@@ -246,6 +255,7 @@ function ChatWindow({ sessionId, setRefreshSessions, theme, setTheme }) {
         const formData = new FormData();
 
         formData.append("file", file);
+        formData.append("sessionId", sessionId);
 
         try {
 
@@ -262,12 +272,28 @@ function ChatWindow({ sessionId, setRefreshSessions, theme, setTheme }) {
             console.log(response.data);
 
             alert("PDF uploaded seccessfully!");
+
+            loadDocuments();
         }
         catch(error) {
 
             console.log(error);
 
             alert("Failed to upload PDF");
+        }
+    };
+
+    const loadDocuments = async () => {
+
+        try {
+
+            const response = await api.get(`/documents/${sessionId}`);
+
+            setDocuments(response.data);
+        }
+        catch(error) {
+
+            console.error(error);
         }
     };
 
@@ -469,6 +495,33 @@ function ChatWindow({ sessionId, setRefreshSessions, theme, setTheme }) {
                         >
                             📄 Export PDF
                         </button>
+                    </div>
+                )}
+
+                {sessionId && documents.length > 0 && (
+                    <div
+                        style={{
+                            margin: "10px 0",
+                            padding: "10px",
+                            background:
+                                theme === "dark"
+                                    ? "#1e293b"
+                                    : "#f8fafc",
+                            borderRadius: "8px"
+                        }}
+                    >
+                        <h4>Uploaded Documents</h4>
+
+                        {documents.map(doc => (
+                            <div
+                                key={doc.id}
+                                style={{
+                                    padding: "5px 0"
+                                }}
+                            >
+                                📄 {doc.fileName}
+                            </div>
+                        ))}
                     </div>
                 )}
 
