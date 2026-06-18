@@ -546,10 +546,16 @@ Enterprise AI Copilot now supports:
 
 # Day 15
 
-- Added session-document relationship
-- Upload PDF with sessionId
-- Store document against specific chat session
-- Load documents by session
-- Show uploaded documents in UI
-- AI uses only current session documents
-- Regenerate response also uses session documents
+- Added session-based document upload functionality.
+- Linked uploaded PDFs to their respective chat sessions.
+- Implemented document retrieval per session.
+- Updated AI context to use only documents from the current session instead of all uploaded documents.
+- Added document list display inside each chat session.
+- Implemented document count display.
+- Added document deletion functionality.
+- Added upload loading indicator ("Uploading...").
+- Fixed session-specific document visibility issue.
+- Verified RAG-style document question answering is working correctly.
+- Created responsive Login and Register UI.
+- Fixed routing/navigation issues in authentication pages.
+- Cleaned up authentication UI for hosting readiness.

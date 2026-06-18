@@ -94,4 +94,9 @@ public class DocumentService {
 
         return context.toString();
     }
+
+    public void deleteDocument(Long id) {
+
+        documentRepository.deleteById(id);
+    }
 }

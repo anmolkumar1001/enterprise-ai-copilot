@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {useNavigate, Link} from "react-router-dom";
 import api from "../api/axiosConfig";
+import "../styles/auth.css";
 
 function Login() {
 
@@ -10,6 +11,9 @@ function Login() {
         email: "",
         password: ""
     });
+
+    const[showPassword, setShowPassword] = useState(false);
+    const[loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
 
@@ -25,6 +29,8 @@ function Login() {
 
         try {
 
+            setLoading(true);
+
             const response = await api.post("/auth/login", formData);
 
             localStorage.setItem("token", response.data);
@@ -35,41 +41,58 @@ function Login() {
         }
         catch(error) {
             console.log(error);
+
             alert("Login failed. Please check your credentials and try again.");
+        }
+        finally {
+
+            setLoading(false);
         }
     };
 
     return (
-        <div>
-            <h2>Login</h2>
+        <div className="auth-container">
+            <div className="auth-card">
 
-            <form onSubmit={handleSubmit}>
+                <h2 className="auth-title">
+                    Enterprise AI Copilot
+                </h2>
 
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    onChange={handleChange} 
-                />
+                <form onSubmit={handleSubmit}>
 
-                <br /><br />
+                    <input
+                        className="auth-input"
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        onChange={handleChange}
+                    />
 
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    onChange={handleChange}  
-                />
+                    <input
+                        className="auth-input"
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        onChange={handleChange}
+                    />
 
-                <br /><br />
+                    <button
+                        className="auth-button"
+                        type="submit"
+                    >
+                        Login
+                    </button>
 
-                <button type="submit">Login</button>
+                </form>
 
-            </form>
+                <Link
+                    className="auth-link"
+                    to="/register"
+                >
+                    Don't have an account? Register
+                </Link>
 
-            <br />
-
-            <Link to="/register">Don't have an account? Register here.</Link>
+            </div>
         </div>
     );
 }

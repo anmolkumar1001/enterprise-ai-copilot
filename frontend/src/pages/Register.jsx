@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import api from "../api/axiosConfig";
 
 function Register() {
@@ -40,40 +40,56 @@ function Register() {
     };
 
     return (
-        <div>
-            <h2>Register</h2>
+        <div className="auth-container">
+            <div className="auth-card">
 
-            <form onSubmit={handleSubmit}>
+                <h2 className="auth-title">
+                    Create Account
+                </h2>
 
-                <input 
-                    type="text"
-                    name="name"
-                    placeholder="Name"
-                    onChange={handleChange}
-                />
+                <form onSubmit={handleSubmit}>
 
-                <br /><br />
+                    <input
+                        className="auth-input"
+                        type="text"
+                        name="name"
+                        placeholder="Name"
+                        onChange={handleChange}
+                    />
 
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    onChange={handleChange} 
-                />
+                    <input
+                        className="auth-input"
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        onChange={handleChange}
+                    />
 
-                <br /><br />
+                    <input
+                        className="auth-input"
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        onChange={handleChange}
+                    />
 
-                <input 
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    onChange={handleChange}
-                />
+                    <button
+                        className="auth-button"
+                        type="submit"
+                    >
+                        Register
+                    </button>
 
-                <br /><br />
-                <button type="submit">Register</button>
+                </form>
 
-            </form>
+                <Link
+                    className="auth-link"
+                    to="/"
+                >
+                    Already have an account? Login
+                </Link>
+
+            </div>
         </div>
     );
 

@@ -39,7 +39,7 @@ public class ChatSessionService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return chatSessionRepository.findByUser(user);
+        return chatSessionRepository.findByUserOrderByCreatedAtDesc(user);
     }
 
     public ChatSession getSessionById(Long sessionId) {

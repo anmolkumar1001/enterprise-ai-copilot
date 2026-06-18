@@ -32,4 +32,10 @@ public class DocumentController {
 
         return documentService.getDocumentsBySession(sessionId);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteDocument(@PathVariable Long id) {
+
+        documentService.deleteDocument(id);
+    }
 }

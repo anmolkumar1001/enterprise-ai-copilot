@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface ChatSessionRepository extends JpaRepository<ChatSession, Long> {
 
-    List<ChatSession> findByUser(User user);
+    List<ChatSession> findByUserOrderByCreatedAtDesc(User user);
 }

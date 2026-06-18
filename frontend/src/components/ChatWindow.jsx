@@ -19,6 +19,8 @@ function ChatWindow({ sessionId, setRefreshSessions, theme, setTheme }) {
 
     const[documents, setDocuments] = useState([]);
 
+    const[uploading, setUploading] = useState(false);
+
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
@@ -259,6 +261,8 @@ function ChatWindow({ sessionId, setRefreshSessions, theme, setTheme }) {
 
         try {
 
+            setUploading(true);
+
             const response = await api.post(
                 "/documents/upload",
                 formData,
@@ -280,6 +284,9 @@ function ChatWindow({ sessionId, setRefreshSessions, theme, setTheme }) {
             console.log(error);
 
             alert("Failed to upload PDF");
+        }
+        finally {
+            setUploading(false);
         }
     };
 
@@ -393,6 +400,23 @@ function ChatWindow({ sessionId, setRefreshSessions, theme, setTheme }) {
         }
     };
 
+    const deleteDocument = async(id) => {
+
+        try {
+
+            await api.delete(`/documents/${id}`);
+
+            setDocuments(prev => 
+                prev.filter(doc => doc.id !== id)
+            );
+        }
+        catch(error) {
+
+            console.error(error);
+            alert("Falied to delete document");
+        }
+    };
+
     return (
 
         <div style={{ 
@@ -454,10 +478,10 @@ function ChatWindow({ sessionId, setRefreshSessions, theme, setTheme }) {
                                 borderRadius: "8px",
                                 background: "#2563eb",
                                 color: "white",
-                                cursor: "pointer"
+                                cursor: uploading ? "not-allowed" : "pointer"
                             }}
                         >
-                            📤 Upload PDF
+                            {uploading ? "Uploading..." : "📤 Upload PDF"}
 
                         <input
                             type="file"
@@ -498,7 +522,7 @@ function ChatWindow({ sessionId, setRefreshSessions, theme, setTheme }) {
                     </div>
                 )}
 
-                {sessionId && documents.length > 0 && (
+                {sessionId && (
                     <div
                         style={{
                             margin: "10px 0",
@@ -510,18 +534,39 @@ function ChatWindow({ sessionId, setRefreshSessions, theme, setTheme }) {
                             borderRadius: "8px"
                         }}
                     >
-                        <h4>Uploaded Documents</h4>
+                        <h4>Uploaded Documents ({documents.length})</h4>
 
-                        {documents.map(doc => (
-                            <div
-                                key={doc.id}
-                                style={{
-                                    padding: "5px 0"
-                                }}
-                            >
-                                📄 {doc.fileName}
-                            </div>
-                        ))}
+                        {documents.length === 0 ? (
+                            <p>No documents uploaded yet.</p>
+                        ) : (
+
+                            documents.map(doc => (
+                                <div
+                                    key={doc.id}
+                                    style={{
+                                        padding: "5px 0",
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center"
+                                    }}
+                                >
+                                    <span>
+                                        📄 {doc.fileName}
+                                    </span>
+
+                                    <button
+                                        onClick={() => deleteDocument(doc.id)}
+                                        style={{
+                                            border: "none",
+                                            background: "transparent",
+                                            cursor: "pointer"
+                                        }}
+                                    >
+                                        🗑️
+                                    </button>
+                                </div>
+                            ))
+                        )}
                     </div>
                 )}
 
